@@ -25,6 +25,11 @@ SECRET_KEY = "$@$7(dej5(4@#7(qj2k!giuk8sv_#=2^3z*+h_epom^higldg*"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# IMPORT PostgreSQL user & password
+with open("secrets.txt") as f:
+    DB_USER = f.readline().strip()
+    DB_PASSWORD = f.readline().strip()
+
 ALLOWED_HOSTS = []
 
 
@@ -77,8 +82,12 @@ WSGI_APPLICATION = "project.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "epic_events_crm",
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 
