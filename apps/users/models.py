@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class EpicMember(AbstractUser):
     class Team(models.TextChoices):
         MANAGE = "MANAGE", "Managing team"
-        SELL = "SELL", "Selling team"
+        SELL = "SELL", "Sales team"
         SUPPORT = "SUPPORT", "Support team"
         UNDEFINED = "NONE", "Need a team"
 
