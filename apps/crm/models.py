@@ -99,6 +99,8 @@ class Event(models.Model):
         STEP_PERFECT = "PERFECT", "To perfect"
         CLOSED = "CLOSED", "Closed"
 
+    name = models.CharField("Event name", max_length=250)
+
     contract = models.ForeignKey(
         to=Contract,
         on_delete=models.CASCADE,
@@ -117,10 +119,13 @@ class Event(models.Model):
     status = models.CharField(
         "Status", max_length=10, choices=Status.choices, default=Status.OPENED
     )
-    attendess = models.PositiveIntegerField(null=True, blank=True)
+    attendees = models.PositiveIntegerField(null=True, blank=True)
     notes = models.TextField("Notes", max_length=8192, null=True, blank=True)
 
     start_date = models.DateTimeField("Event starting date", null=True, blank=True)
     close_date = models.DateTimeField("Event ending date", null=True, blank=True)
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)
+
+    def __str__(self):
+        return self.name
