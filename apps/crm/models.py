@@ -61,7 +61,7 @@ class Contract(models.Model):
     )
     amount = models.FloatField(null=True, blank=True)
 
-    payment_date = models.DateTimeField("Payment date", null=True, blank=True)
+    payment_date = models.DateField("Payment date", null=True, blank=True)
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)
 
