@@ -51,4 +51,7 @@ class UserAdmin(UserAdmin):
         "email",
         "team",
     )
-    list_filter = ("is_active", "team",)
+    list_filter = (
+        "is_active",
+        "team",
+    )

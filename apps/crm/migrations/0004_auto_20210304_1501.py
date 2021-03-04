@@ -6,33 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0003_auto_20210304_1458'),
+        ("crm", "0003_auto_20210304_1458"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='client',
-            name='company_phone',
-            field=models.CharField(max_length=20, null=True, verbose_name='Company phone'),
+            model_name="client",
+            name="company_phone",
+            field=models.CharField(
+                max_length=20, null=True, verbose_name="Company phone"
+            ),
         ),
         migrations.AlterField(
-            model_name='client',
-            name='contact_email',
-            field=models.EmailField(max_length=100, null=True, verbose_name='Contact email'),
+            model_name="client",
+            name="contact_email",
+            field=models.EmailField(
+                max_length=100, null=True, verbose_name="Contact email"
+            ),
         ),
         migrations.AlterField(
-            model_name='client',
-            name='contact_first_name',
-            field=models.CharField(max_length=25, null=True, verbose_name='Contact first name'),
+            model_name="client",
+            name="contact_first_name",
+            field=models.CharField(
+                max_length=25, null=True, verbose_name="Contact first name"
+            ),
         ),
         migrations.AlterField(
-            model_name='client',
-            name='contact_last_name',
-            field=models.CharField(max_length=25, null=True, verbose_name='Contact last name'),
+            model_name="client",
+            name="contact_last_name",
+            field=models.CharField(
+                max_length=25, null=True, verbose_name="Contact last name"
+            ),
         ),
         migrations.AlterField(
-            model_name='client',
-            name='contact_mobile',
-            field=models.CharField(max_length=20, null=True, verbose_name='Contact mobile'),
+            model_name="client",
+            name="contact_mobile",
+            field=models.CharField(
+                max_length=20, null=True, verbose_name="Contact mobile"
+            ),
         ),
     ]

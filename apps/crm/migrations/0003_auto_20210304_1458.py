@@ -9,23 +9,41 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('crm', '0002_auto_20210304_1332'),
+        ("crm", "0002_auto_20210304_1332"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='client',
-            name='sales_contact',
-            field=models.ForeignKey(limit_choices_to={'team': 'SELL'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sales_contact_clients', to=settings.AUTH_USER_MODEL),
+            model_name="client",
+            name="sales_contact",
+            field=models.ForeignKey(
+                limit_choices_to={"team": "SELL"},
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="sales_contact_clients",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='sales_contact',
-            field=models.ForeignKey(limit_choices_to={'team': 'SELL'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sales_contact_contracts', to=settings.AUTH_USER_MODEL),
+            model_name="contract",
+            name="sales_contact",
+            field=models.ForeignKey(
+                limit_choices_to={"team": "SELL"},
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="sales_contact_contracts",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='support_contact',
-            field=models.ForeignKey(limit_choices_to={'team': 'SUPPORT'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='support_contact_events', to=settings.AUTH_USER_MODEL),
+            model_name="event",
+            name="support_contact",
+            field=models.ForeignKey(
+                limit_choices_to={"team": "SUPPORT"},
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="support_contact_events",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

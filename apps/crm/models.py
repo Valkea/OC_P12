@@ -17,22 +17,43 @@ class Client(models.Model):
         related_name="sales_contact_clients",
         null=True,
         blank=True,
-        limit_choices_to={'team': EpicMember.Team.SELL},
+        limit_choices_to={"team": EpicMember.Team.SELL},
     )
 
-    compagny_name = models.CharField("Company name", max_length=250)
+    company_name = models.CharField("Company name", max_length=250)
 
     status = models.CharField(
-        "Status", max_length=10, choices=Status.choices, default=Status.PROSPECT,
+        "Status",
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PROSPECT,
     )
-    contact_first_name = models.CharField("Contact first name", max_length=25, null=True, blank=True)
-    contact_last_name = models.CharField("Contact last name", max_length=25, null=True, blank=True)
-    contact_email = models.EmailField("Contact email", max_length=100, null=True, blank=True)
-    contact_mobile = models.CharField("Contact mobile", max_length=20, null=True, blank=True)
-    company_phone = models.CharField("Company phone", max_length=20, null=True, blank=True)
+    contact_first_name = models.CharField(
+        "Contact first name", max_length=25, null=True, blank=True
+    )
+    contact_last_name = models.CharField(
+        "Contact last name", max_length=25, null=True, blank=True
+    )
+    contact_email = models.EmailField(
+        "Contact email", max_length=100, null=True, blank=True
+    )
+    contact_mobile = models.CharField(
+        "Contact mobile", max_length=20, null=True, blank=True
+    )
+    company_phone = models.CharField(
+        "Company phone", max_length=20, null=True, blank=True
+    )
 
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)
+
+    def __str__(self):
+        contact = " ".join(
+            [x for x in [self.contact_first_name, self.contact_last_name] if x]
+        )
+        if contact != "":
+            contact = f" [{contact}]"
+        return f"{self.company_name}{contact}"
 
 
 class Contract(models.Model):
@@ -53,7 +74,7 @@ class Contract(models.Model):
         related_name="sales_contact_contracts",
         null=True,
         blank=True,
-        limit_choices_to={'team': EpicMember.Team.SELL},
+        limit_choices_to={"team": EpicMember.Team.SELL},
     )
 
     status = models.CharField(
@@ -64,6 +85,9 @@ class Contract(models.Model):
     payment_date = models.DateField("Payment date", null=True, blank=True)
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)
+
+    def __str__(self):
+        return f"Contract N°{self.id}"
 
 
 class Event(models.Model):
@@ -87,7 +111,7 @@ class Event(models.Model):
         related_name="support_contact_events",
         null=True,
         blank=True,
-        limit_choices_to={'team': EpicMember.Team.SUPPORT},
+        limit_choices_to={"team": EpicMember.Team.SUPPORT},
     )
 
     status = models.CharField(

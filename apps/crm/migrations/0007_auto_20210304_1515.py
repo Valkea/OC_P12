@@ -9,58 +9,96 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('crm', '0006_auto_20210304_1509'),
+        ("crm", "0006_auto_20210304_1509"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='client',
-            name='sales_contact',
-            field=models.ForeignKey(blank=True, limit_choices_to={'team': 'SELL'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sales_contact_clients', to=settings.AUTH_USER_MODEL),
+            model_name="client",
+            name="sales_contact",
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to={"team": "SELL"},
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="sales_contact_clients",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='client',
-            name='status',
-            field=models.CharField(choices=[('PROSPECT', 'Potential Client'), ('SIGNED', 'Current Client'), ('OLD', 'Lost Client')], default='PROSPECT', max_length=10, verbose_name='Status'),
+            model_name="client",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PROSPECT", "Potential Client"),
+                    ("SIGNED", "Current Client"),
+                    ("OLD", "Lost Client"),
+                ],
+                default="PROSPECT",
+                max_length=10,
+                verbose_name="Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='amount',
+            model_name="contract",
+            name="amount",
             field=models.FloatField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='payment_date',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Payment date'),
+            model_name="contract",
+            name="payment_date",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Payment date"
+            ),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='sales_contact',
-            field=models.ForeignKey(blank=True, limit_choices_to={'team': 'SELL'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sales_contact_contracts', to=settings.AUTH_USER_MODEL),
+            model_name="contract",
+            name="sales_contact",
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to={"team": "SELL"},
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="sales_contact_contracts",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='attendess',
+            model_name="event",
+            name="attendess",
             field=models.PositiveIntegerField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='close_date',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Event ending date'),
+            model_name="event",
+            name="close_date",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Event ending date"
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='notes',
-            field=models.TextField(blank=True, max_length=8192, null=True, verbose_name='Notes'),
+            model_name="event",
+            name="notes",
+            field=models.TextField(
+                blank=True, max_length=8192, null=True, verbose_name="Notes"
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='start_date',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Event starting date'),
+            model_name="event",
+            name="start_date",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Event starting date"
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='support_contact',
-            field=models.ForeignKey(blank=True, limit_choices_to={'team': 'SUPPORT'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='support_contact_events', to=settings.AUTH_USER_MODEL),
+            model_name="event",
+            name="support_contact",
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to={"team": "SUPPORT"},
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="support_contact_events",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

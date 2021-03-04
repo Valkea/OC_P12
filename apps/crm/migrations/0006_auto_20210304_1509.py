@@ -6,13 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0005_auto_20210304_1508'),
+        ("crm", "0005_auto_20210304_1508"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='client',
-            name='status',
-            field=models.CharField(blank=True, choices=[('PROSPECT', 'Potential Client'), ('SIGNED', 'Current Client'), ('OLD', 'Lost Client')], default='PROSPECT', max_length=10, null=True, verbose_name='Status'),
+            model_name="client",
+            name="status",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("PROSPECT", "Potential Client"),
+                    ("SIGNED", "Current Client"),
+                    ("OLD", "Lost Client"),
+                ],
+                default="PROSPECT",
+                max_length=10,
+                null=True,
+                verbose_name="Status",
+            ),
         ),
     ]
