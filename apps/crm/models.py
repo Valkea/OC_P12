@@ -16,18 +16,20 @@ class Client(models.Model):
         on_delete=models.SET_NULL,
         related_name="sales_contact_clients",
         null=True,
+        blank=True,
+        limit_choices_to={'team': EpicMember.Team.SELL},
     )
 
     compagny_name = models.CharField("Company name", max_length=250)
 
     status = models.CharField(
-        "Status", max_length=10, choices=Status.choices, default=Status.PROSPECT
+        "Status", max_length=10, choices=Status.choices, default=Status.PROSPECT,
     )
-    contact_first_name = models.CharField("Contact first name", max_length=25)
-    contact_last_name = models.CharField("Contact last name", max_length=25)
-    contact_email = models.EmailField("Contact email", max_length=100)
-    contact_mobile = models.CharField("Contact mobile", max_length=20)
-    company_phone = models.CharField("Company phone", max_length=20)
+    contact_first_name = models.CharField("Contact first name", max_length=25, null=True, blank=True)
+    contact_last_name = models.CharField("Contact last name", max_length=25, null=True, blank=True)
+    contact_email = models.EmailField("Contact email", max_length=100, null=True, blank=True)
+    contact_mobile = models.CharField("Contact mobile", max_length=20, null=True, blank=True)
+    company_phone = models.CharField("Company phone", max_length=20, null=True, blank=True)
 
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)
@@ -50,14 +52,16 @@ class Contract(models.Model):
         on_delete=models.SET_NULL,
         related_name="sales_contact_contracts",
         null=True,
+        blank=True,
+        limit_choices_to={'team': EpicMember.Team.SELL},
     )
 
     status = models.CharField(
         "Status", max_length=10, choices=Status.choices, default=Status.OPENED
     )
-    amount = models.FloatField()
+    amount = models.FloatField(null=True, blank=True)
 
-    payment_date = models.DateTimeField("Payment date")
+    payment_date = models.DateTimeField("Payment date", null=True, blank=True)
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)
 
@@ -82,15 +86,17 @@ class Event(models.Model):
         on_delete=models.SET_NULL,
         related_name="support_contact_events",
         null=True,
+        blank=True,
+        limit_choices_to={'team': EpicMember.Team.SUPPORT},
     )
 
     status = models.CharField(
         "Status", max_length=10, choices=Status.choices, default=Status.OPENED
     )
-    attendess = models.PositiveIntegerField()
-    notes = models.TextField("Notes", max_length=8192)
+    attendess = models.PositiveIntegerField(null=True, blank=True)
+    notes = models.TextField("Notes", max_length=8192, null=True, blank=True)
 
-    start_date = models.DateTimeField("Event starting date")
-    close_date = models.DateTimeField("Event ending date")
+    start_date = models.DateTimeField("Event starting date", null=True, blank=True)
+    close_date = models.DateTimeField("Event ending date", null=True, blank=True)
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
     updated_time = models.DateTimeField("Modification date", auto_now=True)

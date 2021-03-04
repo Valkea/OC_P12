@@ -14,7 +14,7 @@ class EpicMember(AbstractUser):
     email = models.EmailField("Email", max_length=100)
 
     team = models.CharField(
-        "Status", max_length=10, choices=Team.choices, default=Team.UNDEFINED
+        "Team", max_length=10, choices=Team.choices, default=Team.UNDEFINED
     )
 
     created_time = models.DateTimeField("Creation date", auto_now_add=True)
