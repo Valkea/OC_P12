@@ -129,3 +129,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+
+# Define the default AUTH_USER_MODEL value
+AUTH_USER_MODEL = "users.EpicMember"
