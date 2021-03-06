@@ -38,3 +38,23 @@ class ContractSerializer(serializers.ModelSerializer):
             "created_time",
             "updated_time",
         ]
+
+
+class EventSerializer(serializers.ModelSerializer):
+    """ This serializer returns a translation of the Event model. """
+
+    class Meta:
+        model = Event
+        fields = [
+            "id",
+            "name",
+            "contract",
+            "support_contact",
+            "status",
+            "attendees",
+            "notes",
+            "start_date",
+            "close_date",
+            "created_time",
+            "updated_time",
+        ]

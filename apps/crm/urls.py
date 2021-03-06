@@ -18,6 +18,7 @@ from django.urls import path
 from .views import (
     ClientViewSet,
     ContractViewSet,
+    EventViewSet,
 )
 
 urlpatterns = [
@@ -25,8 +26,8 @@ urlpatterns = [
         "clients/",
         ClientViewSet.as_view(
             {
-                "get": "list",  # 3
-                "post": "create",  # 4
+                "get": "list",
+                "post": "create",
             }
         ),
         name="clients",
@@ -35,9 +36,9 @@ urlpatterns = [
         "clients/<int:pk>/",
         ClientViewSet.as_view(
             {
-                "get": "retrieve",  # 5
-                "put": "update",  # 6
-                "delete": "destroy",  # 7
+                "get": "retrieve",
+                "put": "update",
+                "delete": "destroy",
             }
         ),
         name="client",
@@ -46,8 +47,8 @@ urlpatterns = [
         "clients/<int:client_pk>/contracts/",
         ContractViewSet.as_view(
             {
-                "get": "list",  # 9
-                "post": "create",  # 8
+                "get": "list",
+                "post": "create",
             }
         ),
         name="client_contracts",
@@ -58,51 +59,30 @@ urlpatterns = [
             {
                 "get": "retrieve",
                 "put": "update",
-                "delete": "destroy",  # 10
+                "delete": "destroy",
             }
         ),
         name="client_contract",
     ),
-    # path(
-    #     "projects/<int:project_pk>/issues/",
-    #     IssueViewSet.as_view(
-    #         {
-    #             "get": "list",  # 11
-    #             "post": "create",  # 12
-    #         }
-    #     ),
-    #     name="project_issues",
-    # ),
-    # path(
-    #     "projects/<int:project_pk>/issues/<int:pk>/",
-    #     IssueViewSet.as_view(
-    #         {
-    #             "get": "retrieve",  # ? pas dans la doc
-    #             "put": "update",  # 13
-    #             "delete": "destroy",  # 14
-    #         }
-    #     ),
-    #     name="project_issue",
-    # ),
-    # path(
-    #     "projects/<int:project_pk>/issues/<int:issue_pk>/comments/",
-    #     CommentViewSet.as_view(
-    #         {
-    #             "get": "list",  # 16
-    #             "post": "create",  # 15
-    #         }
-    #     ),
-    #     name="project_issue_comments",
-    # ),
-    # path(
-    #     "projects/<int:project_pk>/issues/<int:issue_pk>/comments/<int:pk>/",
-    #     CommentViewSet.as_view(
-    #         {
-    #             "get": "retrieve",  # 19
-    #             "put": "update",  # 17
-    #             "delete": "destroy",  # 18
-    #         }
-    #     ),
-    #     name="project_issue_comment",
-    # ),
+    path(
+        "clients/<int:client_pk>/contracts/<int:contract_pk>/events/",
+        EventViewSet.as_view(
+            {
+                "get": "list",
+                "post": "create",
+            }
+        ),
+        name="client_contract_events",
+    ),
+    path(
+        "clients/<int:client_pk>/contracts/<int:contract_pk>/events/<int:pk>/",
+        EventViewSet.as_view(
+            {
+                "get": "retrieve",
+                "put": "update",
+                "delete": "destroy",
+            }
+        ),
+        name="client_contract_event",
+    ),
 ]
