@@ -12,11 +12,6 @@ admin.site.unregister(Group)
 class UserAdmin(UserAdmin):
     """ Define the 'EpicMember' admin section behaviors & displays. """
 
-    def save_model(self, request, obj, form, change):
-        if request.user.is_superuser or request.user.team == EpicMember.Team.MANAGE:
-            obj.is_staff = True
-            obj.save()
-
     fieldsets = [
         (
             None,
@@ -66,6 +61,11 @@ class UserAdmin(UserAdmin):
         if request.user.team == EpicMember.Team.MANAGE:
             return self.readonly_fields + ["is_superuser", "is_staff"]
         return self.readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if request.user.is_superuser or request.user.team == EpicMember.Team.MANAGE:
+            obj.is_staff = True
+            obj.save()
 
     # --- EPIC MEMBER ADMIN Permissions ---
 
