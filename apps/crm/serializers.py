@@ -21,3 +21,20 @@ class ClientSerializer(serializers.ModelSerializer):
             "created_time",
             "updated_time",
         ]
+
+
+class ContractSerializer(serializers.ModelSerializer):
+    """ This serializer returns a translation of the Contract model. """
+
+    class Meta:
+        model = Contract
+        fields = [
+            "id",
+            "client",
+            "sales_contact",
+            "status",
+            "amount",
+            "payment_date",
+            "created_time",
+            "updated_time",
+        ]

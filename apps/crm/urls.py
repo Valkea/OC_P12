@@ -17,6 +17,7 @@ from django.urls import path
 
 from .views import (
     ClientViewSet,
+    ContractViewSet,
 )
 
 urlpatterns = [
@@ -28,7 +29,7 @@ urlpatterns = [
                 "post": "create",  # 4
             }
         ),
-        name="projects",
+        name="clients",
     ),
     path(
         "clients/<int:pk>/",
@@ -39,29 +40,29 @@ urlpatterns = [
                 "delete": "destroy",  # 7
             }
         ),
-        name="project",
+        name="client",
     ),
-    # path(
-    #     "projects/<int:project_pk>/users/",
-    #     ContributorViewSet.as_view(
-    #         {
-    #             "get": "list",  # 9
-    #             "post": "create",  # 8
-    #         }
-    #     ),
-    #     name="project_users",
-    # ),
-    # path(
-    #     "projects/<int:project_pk>/users/<int:pk>/",
-    #     ContributorViewSet.as_view(
-    #         {
-    #             "get": "retrieve",
-    #             "put": "update",
-    #             "delete": "destroy",  # 10
-    #         }
-    #     ),
-    #     name="project_user",
-    # ),
+    path(
+        "clients/<int:client_pk>/contracts/",
+        ContractViewSet.as_view(
+            {
+                "get": "list",  # 9
+                "post": "create",  # 8
+            }
+        ),
+        name="client_contracts",
+    ),
+    path(
+        "clients/<int:client_pk>/contracts/<int:pk>/",
+        ContractViewSet.as_view(
+            {
+                "get": "retrieve",
+                "put": "update",
+                "delete": "destroy",  # 10
+            }
+        ),
+        name="client_contract",
+    ),
     # path(
     #     "projects/<int:project_pk>/issues/",
     #     IssueViewSet.as_view(
