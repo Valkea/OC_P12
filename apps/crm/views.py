@@ -64,7 +64,8 @@ class ContractViewSet(viewsets.ModelViewSet):
                 if client.sales_contact != request.user:
                     raise ValueError("This is not your client")
 
-                request.data._mutable = True
+                if hasattr(request.data, "_mutable"):
+                    request.data._mutable = True
                 request.data.update({"client": client_id})
                 request.data.update({"sales_contact": request.user.id})
 
@@ -116,7 +117,8 @@ class EventViewSet(viewsets.ModelViewSet):
 
             print("SALES TEAM")
 
-            request.data._mutable = True
+            if hasattr(request.data, "_mutable"):
+                request.data._mutable = True
             request.data.pop("support_contact", None)
 
             try:
@@ -135,7 +137,8 @@ class EventViewSet(viewsets.ModelViewSet):
 
             print("SUPPORT TEAM")
 
-            request.data._mutable = True
+            if hasattr(request.data, "_mutable"):
+                request.data._mutable = True
             request.data.pop("support_contact", None)
 
         return request
