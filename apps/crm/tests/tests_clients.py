@@ -10,6 +10,7 @@ def printname(function):
     def wrapper(*args, **kwargs):
         print(f"\n[{function.__name__}]", end="")
         return function(*args, **kwargs)
+
     return wrapper
 
 
@@ -51,17 +52,24 @@ class ClientsTests(APITestCase):
                 "password": "demopass1",
                 "team": "NONE",
             },
+            "NOT_IN_DB": {
+                "username": "",
+                "email": "",
+                "password": "",
+                "team": "",
+            },
         }
 
-        for profile in cls.profiles.values():
-            u = EpicMember.objects.create_user(
-                username=profile['username'],
-                email=profile['email'],
-                password=profile['password'],
-                team=profile['team'],
-            )
-            u.save()
-            profile['instance'] = u
+        for k, profile in cls.profiles.items():
+            if k != "NOT_IN_DB":
+                u = EpicMember.objects.create_user(
+                    username=profile["username"],
+                    email=profile["email"],
+                    password=profile["password"],
+                    team=profile["team"],
+                )
+                u.save()
+                profile["instance"] = u
 
     @classmethod
     def tearDownClass(cls):
@@ -78,7 +86,10 @@ class ClientsTests(APITestCase):
     def login(self, profile):
         resp = self.client.post(
             self.login_url,
-            {"username": self.profiles[profile]['username'], "password": self.profiles[profile]['password']},
+            {
+                "username": self.profiles[profile]["username"],
+                "password": self.profiles[profile]["password"],
+            },
             format="json",
         )
         self.token = resp.data["access"]
@@ -87,8 +98,8 @@ class ClientsTests(APITestCase):
 
     def create_client(self, old_sales_contact="sales1"):
         client = Client.objects.create(
-                company_name="Client test",
-                sales_contact=self.profiles[old_sales_contact]['instance']
+            company_name="Client test",
+            sales_contact=self.profiles[old_sales_contact]["instance"],
         )
 
         client.save()
@@ -101,8 +112,10 @@ class ClientsTests(APITestCase):
     def happy_client_new(self, profile, sales_contact=""):
         self.login(profile)
 
-        if sales_contact != "":
-            sales_contact = self.profiles[sales_contact]['instance'].id
+        if sales_contact == "NOT_IN_DB":
+            sales_contact = 999
+        elif sales_contact != "":
+            sales_contact = self.profiles[sales_contact]["instance"].id
 
         resp = self.client.post(
             self.client_list_url,
@@ -113,12 +126,20 @@ class ClientsTests(APITestCase):
 
     # UPDATES
 
-    def happy_client_update_full(self, old_sales_contact="sales1", new_sales_contact="sales1"):
+    def happy_client_update_full(
+        self, old_sales_contact="sales1", new_sales_contact="sales2"
+    ):
 
-        sales_contact_id_old = self.profiles[old_sales_contact]['instance']
-        sales_contact_id_new = self.profiles[new_sales_contact]['instance'].id
+        sales_contact_id_old = self.profiles[old_sales_contact]["instance"]
 
-        client = Client.objects.create(company_name="Test company", sales_contact=sales_contact_id_old)
+        if new_sales_contact == "NOT_IN_DB":
+            sales_contact_id_new = 999
+        elif new_sales_contact != "":
+            sales_contact_id_new = self.profiles[new_sales_contact]["instance"].id
+
+        client = Client.objects.create(
+            company_name="Test company", sales_contact=sales_contact_id_old
+        )
         client.save()
         client_url = reverse("client", args=[client.id])
 
@@ -132,7 +153,7 @@ class ClientsTests(APITestCase):
                 "contact_last_name": "last name update",
                 "contact_email": "email@update.com",
                 "contact_mobile": "0203040506 update",
-                "company_phone": "0102030405 update"
+                "company_phone": "0102030405 update",
             },
             format="json",
         )
@@ -141,9 +162,11 @@ class ClientsTests(APITestCase):
 
     def happy_client_update_min(self, old_sales_contact="sales1"):
 
-        sales_contact_id_old = self.profiles[old_sales_contact]['instance']
+        sales_contact_id_old = self.profiles[old_sales_contact]["instance"]
 
-        client = Client.objects.create(company_name="Test company", sales_contact=sales_contact_id_old)
+        client = Client.objects.create(
+            company_name="Test company", sales_contact=sales_contact_id_old
+        )
         client.save()
         client_url = reverse("client", args=[client.id])
 
@@ -157,12 +180,16 @@ class ClientsTests(APITestCase):
 
         return resp
 
-    def happy_client_update_no_company_name(self, old_sales_contact="sales1", new_sales_contact="sales1"):
+    def happy_client_update_no_company_name(
+        self, old_sales_contact="sales1", new_sales_contact="sales1"
+    ):
 
-        sales_contact_id_old = self.profiles[old_sales_contact]['instance']
-        sales_contact_id_new = self.profiles[new_sales_contact]['instance'].id
+        sales_contact_id_old = self.profiles[old_sales_contact]["instance"]
+        sales_contact_id_new = self.profiles[new_sales_contact]["instance"].id
 
-        client = Client.objects.create(company_name="Test company", sales_contact=sales_contact_id_old)
+        client = Client.objects.create(
+            company_name="Test company", sales_contact=sales_contact_id_old
+        )
         client.save()
         client_url = reverse("client", args=[client.id])
         sales_contact_id = sales_contact_id_new
@@ -176,7 +203,7 @@ class ClientsTests(APITestCase):
                 "contact_last_name": "last name update",
                 "contact_email": "email@update.com",
                 "contact_mobile": "0203040506 update",
-                "company_phone": "0102030405 update"
+                "company_phone": "0102030405 update",
             },
             format="json",
         )
@@ -185,9 +212,11 @@ class ClientsTests(APITestCase):
 
     def happy_client_update_no_data(self, old_sales_contact="sales1"):
 
-        sales_contact_id_old = self.profiles[old_sales_contact]['instance']
+        sales_contact_id_old = self.profiles[old_sales_contact]["instance"]
 
-        client = Client.objects.create(company_name="Test company", sales_contact=sales_contact_id_old)
+        client = Client.objects.create(
+            company_name="Test company", sales_contact=sales_contact_id_old
+        )
         client.save()
         client_url = reverse("client", args=[client.id])
 
@@ -203,25 +232,25 @@ class ClientsTests(APITestCase):
 
     @printname
     def test_happy_clients_list__MANAGE(self):
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.get(self.client_list_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_clients_list__SELL(self):
-        self.login('sales1')
+        self.login("sales1")
         resp = self.client.get(self.client_list_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_clients_list__SUPPORT(self):
-        self.login('support1')
+        self.login("support1")
         resp = self.client.get(self.client_list_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_clients_list__NOTEAM(self):
-        self.login('noteam')
+        self.login("noteam")
         resp = self.client.get(self.client_list_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
@@ -246,7 +275,7 @@ class ClientsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         client = Client.objects.get(id=resp.data["id"])
-        self.assertEqual(self.profiles['sales2']['instance'], client.sales_contact)
+        self.assertEqual(self.profiles["sales2"]["instance"], client.sales_contact)
 
     @printname
     def test_happy_client_new__SELL_owner(self):
@@ -254,7 +283,7 @@ class ClientsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         client = Client.objects.get(id=resp.data["id"])  # NOTE SAME sales_contact
-        self.assertEqual(self.profiles['sales1']['instance'], client.sales_contact)
+        self.assertEqual(self.profiles["sales1"]["instance"], client.sales_contact)
 
     @printname
     def test_happy_client_new__SUPPORT(self):
@@ -268,18 +297,18 @@ class ClientsTests(APITestCase):
 
     @printname
     def test_happy_client_new_full__MANAGER(self):
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.post(
             self.client_list_url,
             {
                 "company_name": "Test company 123",
                 "status": "PROSPECT",
-                "sales_contact": self.profiles['sales2']['instance'].id,
+                "sales_contact": self.profiles["sales2"]["instance"].id,
                 "contact_first_name": "first name",
                 "contact_last_name": "last name",
                 "contact_email": "email@shedge.com",
                 "contact_mobile": "0203040506",
-                "company_phone": "0102030405"
+                "company_phone": "0102030405",
             },
             format="json",
         )
@@ -297,7 +326,7 @@ class ClientsTests(APITestCase):
 
     @printname
     def test_happy_client_no_data(self):
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.post(
             self.client_list_url,
             {},
@@ -314,33 +343,33 @@ class ClientsTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # --- FETCH PROJECT ---
+    # --- FETCH CLIENTS ---
 
     @printname
     def test_happy_client_fetch__MANAGE(self):
         client, client_url = self.create_client()
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.get(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_client_fetch__SELL(self):
         client, client_url = self.create_client()
-        self.login('sales1')
+        self.login("sales1")
         resp = self.client.get(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_client_fetch__SUPPORT(self):
         client, client_url = self.create_client()
-        self.login('support1')
+        self.login("support1")
         resp = self.client.get(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_client_fetch__NOTEAM(self):
         client, client_url = self.create_client()
-        self.login('noteam')
+        self.login("noteam")
         resp = self.client.get(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
@@ -350,55 +379,57 @@ class ClientsTests(APITestCase):
         resp = self.client.get(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # --- UPDATE PROJECT ---
+    # --- UPDATE CLIENTS ---
 
     @printname
     def test_happy_client_update_full__MANAGE(self):
-        self.login('manage1')
-        resp = self.happy_client_update_full('sales1', 'sales2')
+        self.login("manage1")
+        resp = self.happy_client_update_full("sales1", "sales2")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_client_update_full__SELL(self):
-        self.login('sales1')
-        resp = self.happy_client_update_full('sales1', 'sales1')  # NOTE SAME sales_contact
+        self.login("sales1")
+        resp = self.happy_client_update_full(
+            "sales1", "sales1"
+        )  # NOTE SAME sales_contact
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_sad_client_update_full__SUPPORT(self):
-        self.login('support1')
-        resp = self.happy_client_update_full('sales1', 'sales2')
+        self.login("support1")
+        resp = self.happy_client_update_full("sales1", "sales2")
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_sad_client_update_full__NOTEAM(self):
-        self.login('noteam')
-        resp = self.happy_client_update_full('sales1', 'sales2')
+        self.login("noteam")
+        resp = self.happy_client_update_full("sales1", "sales2")
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     # Others on 1 profile that has the maximum permissions
 
     @printname
     def test_happy_client_update_min__MANAGE(self):
-        self.login('manage1')
-        resp = self.happy_client_update_min('sales1')
+        self.login("manage1")
+        resp = self.happy_client_update_min("sales1")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_client_update_no_company_name__MANAGE(self):
-        self.login('manage1')
-        resp = self.happy_client_update_no_company_name('sales1', 'sales1')
+        self.login("manage1")
+        resp = self.happy_client_update_no_company_name("sales1", "sales1")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     @printname
     def test_happy_client_update_no_data__MANAGE(self):
-        self.login('manage1')
-        resp = self.happy_client_update_no_data('sales1')
+        self.login("manage1")
+        resp = self.happy_client_update_no_data("sales1")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     @printname
     def test_happy_client_update_no_auth(self):
-        resp = self.happy_client_update_min('sales1')
+        resp = self.happy_client_update_min("sales1")
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # # --- DELETE USER ---
@@ -406,28 +437,30 @@ class ClientsTests(APITestCase):
     @printname
     def test_happy_client_delete__MANAGE(self):
         client, client_url = self.create_client()
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.delete(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     @printname
-    def test_happy_client_delete__Stest_happy_client_new_MANAGE_sales_contact_SETELL__owner(self):
-        client, client_url = self.create_client(old_sales_contact='sales1')
-        self.login('sales1')
-        resp = self.client.delete(client_url, data={"format": "json"})  # NOTE SAME sales_contact
+    def test_happy_client_delete__SELL__owner(self):
+        client, client_url = self.create_client(old_sales_contact="sales1")
+        self.login("sales1")
+        resp = self.client.delete(
+            client_url, data={"format": "json"}
+        )  # NOTE SAME sales_contact
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     @printname
     def test_happy_client_delete__SUPPORT(self):
         client, client_url = self.create_client()
-        self.login('support1')
+        self.login("support1")
         resp = self.client.delete(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_happy_client_delete__NOTEAM(self):
         client, client_url = self.create_client()
-        self.login('noteam')
+        self.login("noteam")
         resp = self.client.delete(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -446,72 +479,87 @@ class ClientsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         client = Client.objects.get(id=resp.data["id"])
-        self.assertEqual(self.profiles['sales1']['instance'], client.sales_contact)
+        self.assertEqual(self.profiles["sales1"]["instance"], client.sales_contact)
 
     # FETCH
     @printname
     def test_happy_client_fetch__SELL_other(self):
-        client, client_url = self.create_client('sales2')  # NOTE DIFFERENT sales_contact
-        self.login('sales1')
+        client, client_url = self.create_client(
+            "sales2"
+        )  # NOTE DIFFERENT sales_contact
+        self.login("sales1")
         resp = self.client.get(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     # UPDATE
     @printname
     def test_sad_client_update_full__SELL__other(self):
-        self.login('sales1')
-        resp = self.happy_client_update_full('sales2', 'sales1')  # NOTE DIFFERENT sales_contact
+        self.login("sales1")
+        resp = self.happy_client_update_full(
+            "sales2", "sales1"
+        )  # NOTE DIFFERENT sales_contact
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_sad_client_update_full__SELL__owner(self):
-        self.login('sales1')
-        resp = self.happy_client_update_full('sales1', 'sales2')  # NOTE DIFFERENT sales_contact
+        self.login("sales1")
+        resp = self.happy_client_update_full(
+            "sales1", "sales2"
+        )  # NOTE DIFFERENT sales_contact
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         client = Client.objects.get(id=resp.data["id"])  # NOTE SAME sales_contact
-        self.assertEqual(self.profiles['sales1']['instance'], client.sales_contact)
+        self.assertEqual(self.profiles["sales1"]["instance"], client.sales_contact)
 
     # DELETE
     @printname
     def test_sad_client_delete_SELL__other(self):
-        client, client_url = self.create_client(old_sales_contact='sales2')  # NOTE DIFFERENT sales_contact
-        self.login('sales1')
+        client, client_url = self.create_client(
+            old_sales_contact="sales2"
+        )  # NOTE DIFFERENT sales_contact
+        self.login("sales1")
         resp = self.client.delete(client_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
-    # --- ACT ON NON EXISTING PROJECT ---
+    # --- ACT ON NON EXISTING CLIENT OR USER ---
+
+    # CREATE
+
+    @printname
+    def test_happy_client_new__MANAGE_sales_contact_NOT_IN_DB(self):
+        resp = self.happy_client_new("manage1", "NOT_IN_DB")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     # FETCH
 
     @printname
     def test_sad_client_fetch_not_in_db__MANAGE(self):
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.get(self.client999_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     @printname
     def test_sad_client_fetch_not_in_db__SELL(self):
-        self.login('sales1')
+        self.login("sales1")
         resp = self.client.get(self.client999_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     @printname
     def test_sad_client_fetch_not_in_db__SUPPORT(self):
-        self.login('support1')
+        self.login("support1")
         resp = self.client.get(self.client999_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     @printname
     def test_sad_client_fetch_not_in_db__NOTEAM(self):
-        self.login('noteam')
+        self.login("noteam")
         resp = self.client.get(self.client999_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     # UPDATE
     @printname
     def test_happy_client_update_not_in_db(self):
-        self.login('manage1')
+        self.login("manage1")
 
         resp = self.client.put(
             self.client999_url,
@@ -523,9 +571,15 @@ class ClientsTests(APITestCase):
 
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    @printname
+    def test_happy_client_update_full__MANAGE__support_contact__not_in_db(self):
+        self.login("manage1")
+        resp = self.happy_client_update_full("sales1", "NOT_IN_DB")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
     # DELETE
     @printname
     def test_sad_client_delete_not_in_db(self):
-        self.login('manage1')
+        self.login("manage1")
         resp = self.client.delete(self.client999_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
