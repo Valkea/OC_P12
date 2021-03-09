@@ -24,6 +24,9 @@ class ClientViewSet(viewsets.ModelViewSet):
                 request.data._mutable = True
             request.data.update({"sales_contact": request.user.id})
 
+        elif request.user.team in ["", EpicMember.Team.SUPPORT]:
+            raise PermissionDenied("You aren't allowed to do that")
+
         return request
 
     def create(self, request, *args, **kwargs):
@@ -74,6 +77,9 @@ class ContractViewSet(viewsets.ModelViewSet):
             except ValueError as e:
                 raise PermissionDenied(e)
 
+        elif request.user.team in ["", EpicMember.Team.SUPPORT]:
+            raise PermissionDenied("You aren't allowed to do that")
+
         return request
 
     def create(self, request, *args, **kwargs):
@@ -111,35 +117,22 @@ class EventViewSet(viewsets.ModelViewSet):
     def create_or_update(self, request):
         """ Custom method used to setup the Event's Foreign-keys (sales_contact) """
 
-        print("Events")
-
         if request.user.team == EpicMember.Team.SELL:
-
-            print("SALES TEAM")
 
             if hasattr(request.data, "_mutable"):
                 request.data._mutable = True
             request.data.pop("support_contact", None)
-
-            try:
-                contract_id = self.kwargs.get("contract_pk")
-                contract = Contract.objects.get(id=contract_id)
-
-                if contract.sales_contact != request.user:
-                    raise ValueError("This is not your client")
-
-            except Client.DoesNotExist:
-                raise NotFound(f"A Contract with id {contract_id} does not exist")
-            except ValueError as e:
-                raise PermissionDenied(e)
 
         elif request.user.team == EpicMember.Team.SUPPORT:
 
-            print("SUPPORT TEAM")
-
             if hasattr(request.data, "_mutable"):
                 request.data._mutable = True
             request.data.pop("support_contact", None)
+            event = Event.objects.get(id=self.kwargs.get("pk"))
+            request.data.update({"contract": event.contract.id})
+
+        elif request.user.team == "":
+            raise PermissionDenied("You aren't allowed to do that")
 
         return request
 
