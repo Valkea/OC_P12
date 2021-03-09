@@ -117,7 +117,7 @@ class ContractsTests(APITestCase):
         self.contract = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION="JWT " + self.token)
 
-    def create_contract(self, old_sales_contact="sales1"):
+    def helper_create_contract(self, old_sales_contact="sales1"):
         contract = Contract.objects.create(
             client=self.client01,
             sales_contact=self.profiles[old_sales_contact]["instance"],
@@ -130,7 +130,7 @@ class ContractsTests(APITestCase):
 
     # CREATES
 
-    def happy_contract_new(self, profile, new_client, sales_contact=""):
+    def helper_contract_new(self, profile, new_client, sales_contact=""):
         self.login(profile)
 
         if sales_contact == "NOT_IN_DB":
@@ -151,7 +151,7 @@ class ContractsTests(APITestCase):
 
         return resp
 
-    def happy_contract_new_full(self, set_wrong_format=False):
+    def helper_contract_new_full(self, set_wrong_format=False):
 
         if set_wrong_format:
             paydate = self.get_incoming_date_WRONG_FORMAT()
@@ -172,6 +172,14 @@ class ContractsTests(APITestCase):
 
         return resp
 
+    def helper_contract_new_min(self):
+        resp = self.client.post(
+            self.contract_list_url,
+            {"client": self.client01.id},
+            format="json",
+        )
+        return resp
+
     # UPDATES
 
     def get_incoming_date_RIGHT_FORMAT(self):
@@ -180,9 +188,9 @@ class ContractsTests(APITestCase):
 
     def get_incoming_date_WRONG_FORMAT(self):
         date = datetime.datetime.now() + datetime.timedelta(days=100)
-        return date.strftime("%Y-%m-%d %h:%M:%s")
+        return date.strftime("%Y-%m-%d %H:%M:%s")
 
-    def happy_contract_update_full(
+    def helper_contract_update_full(
         self,
         old_sales_contact="sales1",
         new_sales_contact="sales2",
@@ -221,7 +229,7 @@ class ContractsTests(APITestCase):
 
         return resp
 
-    def happy_contract_update_min(self, old_sales_contact="sales1"):
+    def helper_contract_update_min(self, old_sales_contact="sales1"):
 
         sales_contact_id_old = self.profiles[old_sales_contact]["instance"]
 
@@ -241,7 +249,7 @@ class ContractsTests(APITestCase):
 
         return resp
 
-    def happy_contract_update_no_client(
+    def helper_contract_update_no_client(
         self, old_sales_contact="sales1", new_sales_contact="sales2"
     ):
 
@@ -267,7 +275,7 @@ class ContractsTests(APITestCase):
 
         return resp
 
-    def happy_contract_update_no_data(self, old_sales_contact="sales1"):
+    def helper_contract_update_no_data(self, old_sales_contact="sales1"):
 
         sales_contact_id_old = self.profiles[old_sales_contact]["instance"]
 
@@ -316,11 +324,11 @@ class ContractsTests(APITestCase):
         resp = self.client.get(self.contract_list_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # --- CREATE CONTRACT ---
+    # --- CREATE CONTRACTS ---
 
     @printname
     def test_happy_contract_new__MANAGE_sales_contact_is_NONE(self):
-        resp = self.happy_contract_new("manage1", self.client01)
+        resp = self.helper_contract_new("manage1", self.client01)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         contract = Contract.objects.get(id=resp.data["id"])
@@ -328,7 +336,7 @@ class ContractsTests(APITestCase):
 
     @printname
     def test_happy_contract_new__MANAGE_sales_contact_is_SET(self):
-        resp = self.happy_contract_new("manage1", self.client01, "sales2")
+        resp = self.helper_contract_new("manage1", self.client01, "sales2")
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         contract = Contract.objects.get(id=resp.data["id"])
@@ -336,7 +344,7 @@ class ContractsTests(APITestCase):
 
     @printname
     def test_happy_contract_new__SELL_owner(self):
-        resp = self.happy_contract_new("sales1", self.client01, "sales1")
+        resp = self.helper_contract_new("sales1", self.client01, "sales1")
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         contract = Contract.objects.get(id=resp.data["id"])  # NOTE SAME sales_contact
@@ -344,29 +352,30 @@ class ContractsTests(APITestCase):
 
     @printname
     def test_happy_contract_new__SUPPORT(self):
-        resp = self.happy_contract_new("support1", self.client01)
+        resp = self.helper_contract_new("support1", self.client01)
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_happy_contract_new__NOTEAM(self):
-        resp = self.happy_contract_new("noteam", self.client01)
+        resp = self.helper_contract_new("noteam", self.client01)
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_happy_contract_new_full__MANAGER(self):
         self.login("manage1")
-        resp = self.happy_contract_new_full()
+        resp = self.helper_contract_new_full()
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
     @printname
     def test_happy_contract_new_min(self):
         self.login("manage1")
-        resp = self.client.post(
-            self.contract_list_url,
-            {"client": self.client01.id},
-            format="json",
-        )
+        resp = self.helper_contract_new_min()
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+    @printname
+    def test_happy_contract_no_auth(self):
+        resp = self.helper_contract_new_min()
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @printname
     def test_happy_contract_no_data(self):
@@ -378,48 +387,39 @@ class ContractsTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @printname
-    def test_happy_contract_no_auth(self):
-        resp = self.client.post(
-            self.contract_list_url,
-            {"client": self.client01.id},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
-
     # --- FETCH CONTRACTS ---
 
     @printname
     def test_happy_contract_fetch__MANAGE(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("manage1")
         resp = self.client.get(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_contract_fetch__SELL(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("sales1")
         resp = self.client.get(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_contract_fetch__SUPPORT(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("support1")
         resp = self.client.get(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_contract_fetch__NOTEAM(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("noteam")
         resp = self.client.get(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_sad_contracts_fetch_no_auth(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         resp = self.client.get(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -428,13 +428,13 @@ class ContractsTests(APITestCase):
     @printname
     def test_happy_contract_update_full__MANAGE(self):
         self.login("manage1")
-        resp = self.happy_contract_update_full("sales1", "sales2")
+        resp = self.helper_contract_update_full("sales1", "sales2")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_contract_update_full__SELL(self):
         self.login("sales1")
-        resp = self.happy_contract_update_full(
+        resp = self.helper_contract_update_full(
             "sales1", "sales1"
         )  # NOTE SAME sales_contact
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -442,13 +442,13 @@ class ContractsTests(APITestCase):
     @printname
     def test_sad_contract_update_full__SUPPORT(self):
         self.login("support1")
-        resp = self.happy_contract_update_full("sales1", "sales2")
+        resp = self.helper_contract_update_full("sales1", "sales2")
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_sad_contract_update_full__NOTEAM(self):
         self.login("noteam")
-        resp = self.happy_contract_update_full("sales1", "sales2")
+        resp = self.helper_contract_update_full("sales1", "sales2")
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     # Others on 1 profile that has the maximum permissions
@@ -456,38 +456,38 @@ class ContractsTests(APITestCase):
     @printname
     def test_happy_contract_update_min__MANAGE(self):
         self.login("manage1")
-        resp = self.happy_contract_update_min()
+        resp = self.helper_contract_update_min()
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     @printname
     def test_happy_contract_update_no_company_name__MANAGE(self):
         self.login("manage1")
-        resp = self.happy_contract_update_no_client()
+        resp = self.helper_contract_update_no_client()
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     @printname
     def test_happy_contract_update_no_data__MANAGE(self):
         self.login("manage1")
-        resp = self.happy_contract_update_no_data()
+        resp = self.helper_contract_update_no_data()
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     @printname
     def test_happy_contract_update_no_auth(self):
-        resp = self.happy_contract_update_min()
+        resp = self.helper_contract_update_min()
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # # --- DELETE USER ---
+    # --- DELETE CONTRACTS ---
 
     @printname
     def test_happy_contract_delete__MANAGE(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("manage1")
         resp = self.client.delete(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     @printname
     def test_happy_contract_delete__SELL__owner(self):
-        contract, contract_url = self.create_contract(old_sales_contact="sales1")
+        contract, contract_url = self.helper_create_contract(old_sales_contact="sales1")
         self.login("sales1")
         resp = self.client.delete(
             contract_url, data={"format": "json"}
@@ -496,21 +496,21 @@ class ContractsTests(APITestCase):
 
     @printname
     def test_happy_contract_delete__SUPPORT(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("support1")
         resp = self.client.delete(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_happy_contract_delete__NOTEAM(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         self.login("noteam")
         resp = self.client.delete(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     @printname
     def test_sad_contract_delete_no_auth(self):
-        contract, contract_url = self.create_contract()
+        contract, contract_url = self.helper_create_contract()
         resp = self.client.delete(contract_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -519,7 +519,7 @@ class ContractsTests(APITestCase):
     # CREATE
     @printname
     def test_happy_contract_new__SELL_other(self):
-        resp = self.happy_contract_new(
+        resp = self.helper_contract_new(
             "sales1", self.client01, "sales2"
         )  # NOTE DIFFERENT sales_contact
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
@@ -530,7 +530,7 @@ class ContractsTests(APITestCase):
     # FETCH
     @printname
     def test_happy_contract_fetch__SELL_other(self):
-        contract, contract_url = self.create_contract(
+        contract, contract_url = self.helper_create_contract(
             "sales2"
         )  # NOTE DIFFERENT sales_contact
         self.login("sales1")
@@ -541,7 +541,7 @@ class ContractsTests(APITestCase):
     @printname
     def test_sad_contract_update_full__SELL__other(self):
         self.login("sales1")
-        resp = self.happy_contract_update_full(
+        resp = self.helper_contract_update_full(
             "sales2", "sales1"
         )  # NOTE DIFFERENT sales_contact
         self.assertEqual(
@@ -551,7 +551,7 @@ class ContractsTests(APITestCase):
     @printname
     def test_sad_contract_update_full__SELL__owner(self):
         self.login("sales1")
-        resp = self.happy_contract_update_full(
+        resp = self.helper_contract_update_full(
             "sales1", "sales2"
         )  # NOTE DIFFERENT sales_contact
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -562,7 +562,7 @@ class ContractsTests(APITestCase):
     # DELETE
     @printname
     def test_sad_contract_delete_SELL__other(self):
-        contract, contract_url = self.create_contract(
+        contract, contract_url = self.helper_create_contract(
             old_sales_contact="sales2"
         )  # NOTE DIFFERENT sales_contact
         self.login("sales1")
@@ -575,12 +575,12 @@ class ContractsTests(APITestCase):
 
     @printname
     def test_happy_contract_new__MANAGE_sales_contact_NOT_IN_DB(self):
-        resp = self.happy_contract_new("manage1", self.client01, "NOT_IN_DB")
+        resp = self.helper_contract_new("manage1", self.client01, "NOT_IN_DB")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     @printname
     def test_happy_contract_new__MANAGE__NOT_A_CLIENT(self):
-        resp = self.happy_contract_new("manage1", "NOT_IN_DB", "sales1")
+        resp = self.helper_contract_new("manage1", "NOT_IN_DB", "sales1")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     # FETCH
@@ -625,7 +625,7 @@ class ContractsTests(APITestCase):
     @printname
     def test_happy_contract_update_full__MANAGE__support_contact__not_in_db(self):
         self.login("manage1")
-        resp = self.happy_contract_update_full("sales1", "NOT_IN_DB")
+        resp = self.helper_contract_update_full("sales1", "NOT_IN_DB")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     # DELETE
@@ -640,11 +640,11 @@ class ContractsTests(APITestCase):
     @printname
     def test_happy_contract_new_full__MANAGER__WRONG_DATE_FORMAT(self):
         self.login("manage1")
-        resp = self.happy_contract_new_full(True)
+        resp = self.helper_contract_new_full(True)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     @printname
     def test_happy_contract_update_full__MANAGE__WRONG_DATE_FORMAT(self):
         self.login("manage1")
-        resp = self.happy_contract_update_full("sales1", "sales2", True)
+        resp = self.helper_contract_update_full("sales1", "sales2", True)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
