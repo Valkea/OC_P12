@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from apps.crm.models import Contract, Event
 from apps.users.models import EpicMember
+from apps.crm.permissions import CheckEventPermissions
 
 # admin.site.register(Event)
 
@@ -101,36 +102,42 @@ class EventAdmin(admin.ModelAdmin):
         if not hasattr(request.user, "team"):
             return False
 
-        if request.user.is_superuser:
-            return True
+        return CheckEventPermissions.has_permission_static(request, is_admin=True)
 
-        if request.user.team == EpicMember.Team.MANAGE:
-            return True
+        # if request.user.is_superuser:
+        #     return True
 
-        if request.user.team == EpicMember.Team.SELL:
-            return True
+        # if request.user.team == EpicMember.Team.MANAGE:
+        #     return True
 
-        return False
+        # if request.user.team == EpicMember.Team.SELL:
+        #     return True
+
+        # return False
 
     def has_change_delete_permission(self, request, obj=None):
 
         if obj is None:
             return False
 
-        if request.user.is_superuser:
-            return True
+        return CheckEventPermissions.has_object_permission_static(
+            request, obj, is_admin=True
+        )
 
-        if request.user.team == EpicMember.Team.MANAGE:
-            return True
+        # if request.user.is_superuser:
+        #     return True
 
-        if request.user.team == EpicMember.Team.SELL:
-            contract = Contract.objects.get(id=obj.contract.id)
-            return contract.sales_contact == request.user
+        # if request.user.team == EpicMember.Team.MANAGE:
+        #     return True
 
-        if request.user.team == EpicMember.Team.SUPPORT:
-            return obj.support_contact == request.user
+        # if request.user.team == EpicMember.Team.SELL:
+        #     contract = Contract.objects.get(id=obj.contract.id)
+        #     return contract.sales_contact == request.user
 
-        return False
+        # if request.user.team == EpicMember.Team.SUPPORT:
+        #     return obj.support_contact == request.user
+
+        # return False
 
     def has_change_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)
