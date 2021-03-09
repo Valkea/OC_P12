@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from apps.crm.models import Client, Contract
 from apps.users.models import EpicMember
+from apps.crm.permissions import CheckClientPermissions
 
 # admin.site.register(Client)
 
@@ -161,32 +162,16 @@ class ClientAdmin(admin.ModelAdmin):
         if not hasattr(request.user, "team"):
             return False
 
-        if request.user.is_superuser:
-            return True
-
-        if request.user.team == EpicMember.Team.MANAGE:
-            return True
-
-        elif request.user.team == EpicMember.Team.SELL:
-            return True
-
-        return False
+        return CheckClientPermissions.has_permission_static(request, is_admin=True)
 
     def has_change_delete_permission(self, request, obj=None):
 
         if obj is None:
             return False
 
-        if request.user.is_superuser:
-            return True
-
-        if request.user.team == EpicMember.Team.MANAGE:
-            return True
-
-        elif request.user.team == EpicMember.Team.SELL:
-            return obj.sales_contact == request.user
-
-        return False
+        return CheckClientPermissions.has_object_permission_static(
+            request, obj, is_admin=True
+        )
 
     def has_change_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)

@@ -5,6 +5,7 @@ from django.contrib import messages
 
 from apps.crm.models import Client, Contract, Event
 from apps.users.models import EpicMember
+from apps.crm.permissions import CheckContractPermissions
 
 # admin.site.register(Contract)
 
@@ -122,7 +123,7 @@ class ContractAdmin(admin.ModelAdmin):
         if request.user.team == EpicMember.Team.SELL:
             client = Client.objects.get(id=obj.client.id)
             if not client.sales_contact == request.user:
-                return messages.error(request, "You can only contracts to your clients")
+                return messages.error(request, "This is not your client")
             obj.sales_contact = request.user
         obj.save()
 
@@ -139,32 +140,16 @@ class ContractAdmin(admin.ModelAdmin):
         if not hasattr(request.user, "team"):
             return False
 
-        if request.user.is_superuser:
-            return True
-
-        if request.user.team == EpicMember.Team.MANAGE:
-            return True
-
-        elif request.user.team == EpicMember.Team.SELL:
-            return True
-
-        return False
+        return CheckContractPermissions.has_permission_static(request, is_admin=True)
 
     def has_change_delete_permission(self, request, obj=None):
 
         if obj is None:
             return False
 
-        if request.user.is_superuser:
-            return True
-
-        if request.user.team == EpicMember.Team.MANAGE:
-            return True
-
-        elif request.user.team == EpicMember.Team.SELL:
-            return obj.sales_contact == request.user
-
-        return False
+        return CheckContractPermissions.has_object_permission_static(
+            request, obj, is_admin=True
+        )
 
     def has_change_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)
