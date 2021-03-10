@@ -106,6 +106,9 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
 
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = EventFilter
+
     def get_queryset(self, *args, **kwargs):
         """ Handle nested Client's and Contract's 'pk' in the URI """
         try:
