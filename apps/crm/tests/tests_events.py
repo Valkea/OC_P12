@@ -734,8 +734,13 @@ class EventsTests(APITestCase):
     # CREATE
 
     @printname
-    def test_happy_event_new__MANAGE_support_contact_is_not_in_db(self):
+    def test_happy_event_new__MANAGE_contract_is_not_in_db(self):
         resp = self.helper_event_new("manage1", "NOT_IN_DB")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @printname
+    def test_happy_event_new__MANAGE_support_contact_is_not_in_db(self):
+        resp = self.helper_event_new("manage1", self.contract01, "NOT_IN_DB")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     # FETCH
