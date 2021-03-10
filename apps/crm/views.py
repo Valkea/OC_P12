@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions  # , status
 from rest_framework.exceptions import NotFound, PermissionDenied
+from django_filters import rest_framework as filters
 
 from apps.users.models import EpicMember
 from .models import Client, Contract, Event
@@ -10,11 +11,17 @@ from .permissions import (
     CheckEventPermissions,
 )
 
+from .filters import ClientFilter, ContractFilter, EventFilter
+
 
 class ClientViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.IsAuthenticated & CheckClientPermissions)]
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
+
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ClientFilter
+    # filterset_fields = ['company_name', 'status']
 
     def create_or_update(self, request):
         """ Custom method used to setup the Client's Foreign-keys (sales_contact) """
