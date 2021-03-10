@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "apps.crm",
     "apps.users",
     "rest_framework",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -137,6 +138,7 @@ AUTH_USER_MODEL = "users.EpicMember"
 
 # Define Restful default values
 REST_FRAMEWORK = {
+    # "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
