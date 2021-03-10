@@ -50,6 +50,9 @@ class ContractViewSet(viewsets.ModelViewSet):
     serializer_class = ContractSerializer
     queryset = Contract.objects.all()
 
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ContractFilter
+
     def get_queryset(self, *args, **kwargs):
         """ Handle nested Client's 'pk' in the URI """
         try:
