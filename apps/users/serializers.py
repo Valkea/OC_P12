@@ -20,6 +20,8 @@ class EpicMember_Serializer(serializers.ModelSerializer):
             "email",
             "password",
             "is_active",
+            "created_time",
+            "last_login",
         )
         extra_kwargs = {"password": {"write_only": True}}
 
