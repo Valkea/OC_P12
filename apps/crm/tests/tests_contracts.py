@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from apps.users.models import EpicMember
-from apps.crm.models import Client, Contract
+from apps.crm.models import Client, Contract, Status
 
 
 def printname(function):
@@ -20,6 +20,9 @@ class ContractsTests(APITestCase):
     @classmethod
     def setUpClass(cls):
         cls.login_url = reverse("token_obtain_pair")
+
+        cls.StatusContractOpened = Status.objects.get(table="CONTRACT", value="OPENED")
+        cls.StatusContractClosed = Status.objects.get(table="CONTRACT", value="PAID")
 
         cls.profiles = {
             "manage1": {
@@ -163,7 +166,7 @@ class ContractsTests(APITestCase):
             {
                 "client": self.client01.id,
                 "sales_contact": self.profiles["sales2"]["instance"].id,
-                "status": "SIGNED",
+                "status": self.StatusContractOpened.id,
                 "amount": 15000.0,
                 "payment_date": paydate,
             },
@@ -220,7 +223,7 @@ class ContractsTests(APITestCase):
             {
                 "client": self.client02.id,
                 "sales_contact": sales_contact_id_new,
-                "status": "SIGNED",
+                "status": self.StatusContractClosed.id,
                 "amount": 15000.0,
                 "payment_date": paydate,
             },
@@ -266,7 +269,7 @@ class ContractsTests(APITestCase):
             contract_url,
             {
                 "sales_contact": sales_contact_id_new,
-                "status": "SIGNED",
+                "status": self.StatusContractClosed.id,
                 "amount": 15000.0,
                 "payment_date": self.get_incoming_date_RIGHT_FORMAT(),
             },

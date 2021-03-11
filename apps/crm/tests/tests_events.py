@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from apps.users.models import EpicMember
-from apps.crm.models import Client, Contract, Event
+from apps.crm.models import Client, Contract, Event, Status
 
 
 def printname(function):
@@ -20,6 +20,9 @@ class EventsTests(APITestCase):
     @classmethod
     def setUpClass(cls):
         cls.login_url = reverse("token_obtain_pair")
+
+        cls.StatusEventOpened = Status.objects.get(table="EVENT", value="OPENED")
+        cls.StatusEventClosed = Status.objects.get(table="EVENT", value="CLOSED")
 
         cls.profiles = {
             "manage1": {
@@ -197,7 +200,7 @@ class EventsTests(APITestCase):
                 "name": "Demo Event Name",
                 "contract": self.contract01.id,
                 "support_contact": self.profiles["support1"]["instance"].id,
-                "status": "OPENED",
+                "status": self.StatusEventOpened.id,
                 "attendees": 1500,
                 "notes": "Bla bla",
                 "start_date": incomingDate,
@@ -272,7 +275,7 @@ class EventsTests(APITestCase):
             {
                 "name": "Demo Event Name",
                 "contract": new_contract,
-                "status": "CLOSED",
+                "status": self.StatusEventClosed.id,
                 "support_contact": support_contact_id_new,
                 "attendees": 2000,
                 "notes": "Bla bla bla",
@@ -289,7 +292,7 @@ class EventsTests(APITestCase):
         event = Event.objects.create(
             name="Demo Event Name",
             contract=self.contract01,
-            status="OPENED",
+            status=self.StatusEventOpened,
         )
         event.save()
         event_url = reverse(

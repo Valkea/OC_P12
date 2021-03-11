@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from apps.users.models import EpicMember
-from apps.crm.models import Client
+from apps.crm.models import Client, Status
 
 
 def printname(function):
@@ -20,6 +20,9 @@ class ClientsTests(APITestCase):
         cls.login_url = reverse("token_obtain_pair")
         cls.client_list_url = reverse("clients")
         cls.client999_url = reverse("client", args=[999])
+
+        cls.StatusClientProspect = Status.objects.get(table="CLIENT", value="PROSPECT")
+        cls.StatusClientSigned = Status.objects.get(table="CLIENT", value="SIGNED")
 
         cls.profiles = {
             "manage1": {
@@ -129,7 +132,7 @@ class ClientsTests(APITestCase):
             self.client_list_url,
             {
                 "company_name": "Test company 123",
-                "status": "PROSPECT",
+                "status": self.StatusClientProspect.id,
                 "sales_contact": self.profiles["sales2"]["instance"].id,
                 "contact_first_name": "first name",
                 "contact_last_name": "last name",
@@ -172,7 +175,7 @@ class ClientsTests(APITestCase):
             client_url,
             {
                 "company_name": "Test company 123 update",
-                "status": "SIGNED",
+                "status": self.StatusClientSigned.id,
                 "sales_contact": sales_contact_id_new,
                 "contact_first_name": "first name update",
                 "contact_last_name": "last name update",
@@ -222,7 +225,7 @@ class ClientsTests(APITestCase):
         resp = self.client.put(
             client_url,
             {
-                "status": "SIGNED",
+                "status": self.StatusClientSigned.id,
                 "sales_contact": sales_contact_id,
                 "contact_first_name": "first name update",
                 "contact_last_name": "last name update",
