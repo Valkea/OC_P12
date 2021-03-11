@@ -5,11 +5,33 @@ from django.db import models
 from apps.users.models import EpicMember
 
 
+class Status(models.Model):
+
+    class Meta:
+        unique_together = (("table", "value"),)
+        verbose_name = "Status"
+        verbose_name_plural = "Status"
+
+    class Table(models.TextChoices):
+        CLIENT = "CLIENT", "Client status"
+        CONTRACT = "CONTRACT", "Contract status"
+        EVENT = "EVENT", "Event status"
+
+    table = models.CharField(
+        "Table",
+        max_length=10,
+        choices=Table.choices,
+        default=Table.CLIENT,
+    )
+
+    value = models.CharField("Database value", max_length=20)
+    label = models.CharField("Displayed value", max_length=100)
+
+    def __str__(self):
+        return f"{self.label}"
+
+
 class Client(models.Model):
-    class Status(models.TextChoices):
-        PROSPECT = "PROSPECT", "Potential Client"
-        SIGNED = "SIGNED", "Current Client"
-        OLD = "OLD", "Lost Client"
 
     sales_contact = models.ForeignKey(
         to=EpicMember,
@@ -22,12 +44,14 @@ class Client(models.Model):
 
     company_name = models.CharField("Company name", max_length=250)
 
-    status = models.CharField(
-        "Status",
-        max_length=10,
-        choices=Status.choices,
-        default=Status.PROSPECT,
+    status = models.ForeignKey(
+        to=Status,
+        on_delete=models.PROTECT,
+        limit_choices_to={"table": Status.Table.CLIENT},
+        null=True,
+        blank=True,
     )
+
     contact_first_name = models.CharField(
         "Contact first name", max_length=25, null=True, blank=True
     )
@@ -57,10 +81,6 @@ class Client(models.Model):
 
 
 class Contract(models.Model):
-    class Status(models.TextChoices):
-        OPENED = "OPENED", "Waiting for a signature"
-        SIGN = "SIGNED", "Signed"
-        CLOSED = "PAID", "Paid"
 
     client = models.ForeignKey(
         to=Client,
@@ -77,9 +97,14 @@ class Contract(models.Model):
         limit_choices_to={"team": EpicMember.Team.SELL},
     )
 
-    status = models.CharField(
-        "Status", max_length=10, choices=Status.choices, default=Status.OPENED
+    status = models.ForeignKey(
+        to=Status,
+        on_delete=models.PROTECT,
+        limit_choices_to={"table": Status.Table.CONTRACT},
+        null=True,
+        blank=True,
     )
+
     amount = models.FloatField(null=True, blank=True)
 
     payment_date = models.DateField("Payment date", null=True, blank=True)
@@ -91,13 +116,6 @@ class Contract(models.Model):
 
 
 class Event(models.Model):
-    class Status(models.TextChoices):
-        OPENED = "OPENED", "Need a support contact"
-        STEP_PLAN = "PLAN", "To planify"
-        STEP_PREPARE = "PREPARE", "To prepare"
-        STEP_PRODUCT = "PRODUCE", "To produce"
-        STEP_PERFECT = "PERFECT", "To perfect"
-        CLOSED = "CLOSED", "Closed"
 
     name = models.CharField("Event name", max_length=250)
 
@@ -116,9 +134,15 @@ class Event(models.Model):
         limit_choices_to={"team": EpicMember.Team.SUPPORT},
     )
 
-    status = models.CharField(
-        "Status", max_length=10, choices=Status.choices, default=Status.OPENED
+    status = models.ForeignKey(
+        to=Status,
+        on_delete=models.PROTECT,
+        related_name="status_events",
+        limit_choices_to={"table": Status.Table.EVENT},
+        null=True,
+        blank=True,
     )
+
     attendees = models.PositiveIntegerField(null=True, blank=True)
     notes = models.TextField("Notes", max_length=8192, null=True, blank=True)
 
