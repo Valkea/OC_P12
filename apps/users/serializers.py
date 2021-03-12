@@ -30,7 +30,7 @@ class EpicMember_Serializer(serializers.ModelSerializer):
 
         validated_data["is_staff"] = True
 
-        return EpicMember(**validated_data)
+        return super().create(validated_data)
 
 
 class EpicMember_DETAILS_Serializer(serializers.ModelSerializer):
