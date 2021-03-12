@@ -142,6 +142,9 @@ class EventsTests(APITestCase):
         self.contract = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION="JWT " + self.token)
 
+    def helper_count_events(self):
+        return len(Event.objects.all())
+
     def helper_create_event(self, old_contract=None):
 
         if old_contract is None:
@@ -409,6 +412,13 @@ class EventsTests(APITestCase):
     # --- CREATE EVENTS ---
 
     @printname
+    def test_happy_event_new_count__MANAGE(self):
+        pre_count = self.helper_count_events()
+        resp = self.helper_event_new("manage1", self.contract01)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(pre_count + 1, self.helper_count_events())
+
+    @printname
     def test_happy_event_new__MANAGE_support_contact_is_NONE(self):
         resp = self.helper_event_new("manage1", self.contract01)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
@@ -647,6 +657,15 @@ class EventsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # --- DELETE EVENTS ---
+
+    @printname
+    def test_happy_event_delete_count__MANAGE(self):
+        event, event_url = self.helper_create_event()
+        pre_count = self.helper_count_events()
+        self.login("manage1")
+        resp = self.client.delete(event_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(pre_count - 1, self.helper_count_events())
 
     @printname
     def test_happy_event_delete__MANAGE(self):

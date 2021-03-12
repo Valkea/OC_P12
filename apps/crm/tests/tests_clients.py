@@ -99,6 +99,9 @@ class ClientsTests(APITestCase):
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION="JWT " + self.token)
 
+    def helper_count_clients(self):
+        return len(Client.objects.all())
+
     def helper_create_client(self, old_sales_contact="sales1"):
         client = Client.objects.create(
             company_name="Client test",
@@ -288,6 +291,12 @@ class ClientsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # --- CREATE CLIENTS ---
+    @printname
+    def test_happy_client_new_count__MANAGE(self):
+        pre_count = self.helper_count_clients()
+        resp = self.helper_client_new("manage1")
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(pre_count + 1, self.helper_count_clients())
 
     @printname
     def test_happy_client_new__MANAGE_sales_contact_NONE(self):
@@ -440,6 +449,15 @@ class ClientsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # --- DELETE CLIENTS ---
+
+    @printname
+    def test_happy_client_delete_count__MANAGE(self):
+        client, client_url = self.helper_create_client()
+        pre_count = self.helper_count_clients()
+        self.login("manage1")
+        resp = self.client.delete(client_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(pre_count - 1, self.helper_count_clients())
 
     @printname
     def test_happy_client_delete__MANAGE(self):

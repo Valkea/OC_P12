@@ -120,6 +120,9 @@ class ContractsTests(APITestCase):
         self.contract = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION="JWT " + self.token)
 
+    def helper_count_contracts(self):
+        return len(Contract.objects.all())
+
     def helper_create_contract(self, old_sales_contact="sales1"):
         contract = Contract.objects.create(
             client=self.client01,
@@ -330,6 +333,13 @@ class ContractsTests(APITestCase):
     # --- CREATE CONTRACTS ---
 
     @printname
+    def test_happy_contract_new_count__MANAGE(self):
+        pre_count = self.helper_count_contracts()
+        resp = self.helper_contract_new("manage1", self.client01)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(pre_count + 1, self.helper_count_contracts())
+
+    @printname
     def test_happy_contract_new__MANAGE_sales_contact_is_NONE(self):
         resp = self.helper_contract_new("manage1", self.client01)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
@@ -480,6 +490,15 @@ class ContractsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # --- DELETE CONTRACTS ---
+
+    @printname
+    def test_happy_contract_delete_count__MANAGE(self):
+        contract, contract_url = self.helper_create_contract()
+        pre_count = self.helper_count_contracts()
+        self.login("manage1")
+        resp = self.client.delete(contract_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(pre_count - 1, self.helper_count_contracts())
 
     @printname
     def test_happy_contract_delete__MANAGE(self):
