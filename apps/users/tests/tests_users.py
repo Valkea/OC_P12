@@ -116,6 +116,9 @@ class EpicMembersTests(APITestCase):
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION="JWT " + self.token)
 
+    def helper_count_users(self):
+        return len(EpicMember.objects.all())
+
     def helper_get_user_details(self, profile):
 
         if profile == "NOT_IN_DB":
@@ -244,6 +247,14 @@ class EpicMembersTests(APITestCase):
     # --- CREATE USERS ---
 
     @printname
+    def test_happy_user_create_full_count__MANAGE(self):
+        pre_count = self.helper_count_users()
+        self.login("manage1")
+        resp = self.helper_user_create_full()
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(pre_count+1, self.helper_count_users())
+
+    @printname
     def test_happy_user_create_full__MANAGE(self):
         self.login("manage1")
         resp = self.helper_user_create_full()
@@ -268,6 +279,14 @@ class EpicMembersTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     # Others tests
+
+    @printname
+    def test_happy_user_create_min_is_staff__MANAGE(self):
+        self.login("manage1")
+        resp = self.helper_user_create_min(True, True)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        user = EpicMember.objects.get(id=resp.data['id'])
+        self.assertEqual(user.is_staff, True)
 
     @printname
     def test_happy_user_create_min__MANAGE__NOTEAM(self):
@@ -408,6 +427,16 @@ class EpicMembersTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # --- DELETE USER ---
+
+    @printname
+    def test_happy_user_delete_count__MANAGE(self):
+        pre_count = self.helper_count_users()
+        self.login("manage1")
+        resp = self.client.delete(
+            self.user_manage1_details_url, data={"format": "json"}
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)  # NOTE Really ?
+        self.assertEqual(pre_count-1, self.helper_count_users())
 
     @printname
     def test_happy_user_delete__MANAGE(self):
@@ -644,7 +673,7 @@ class EpicMembersTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
-    # # --- ACT ON NON EXISTING PROFILE ---
+    # --- ACT ON NON EXISTING PROFILE ---
 
     # FETCH
     @printname
