@@ -144,6 +144,9 @@ class ContractAdmin(admin.ModelAdmin):
 
     def has_change_delete_permission(self, request, obj=None):
 
+        if not hasattr(request.user, "team"):
+            return False
+
         if request.user.is_superuser:
             return True
         elif request.user.team == EpicMember.Team.MANAGE:
