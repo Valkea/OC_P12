@@ -252,7 +252,7 @@ class EpicMembersTests(APITestCase):
         self.login("manage1")
         resp = self.helper_user_create_full()
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(pre_count+1, self.helper_count_users())
+        self.assertEqual(pre_count + 1, self.helper_count_users())
 
     @printname
     def test_happy_user_create_full__MANAGE(self):
@@ -285,7 +285,7 @@ class EpicMembersTests(APITestCase):
         self.login("manage1")
         resp = self.helper_user_create_min(True, True)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        user = EpicMember.objects.get(id=resp.data['id'])
+        user = EpicMember.objects.get(id=resp.data["id"])
         self.assertEqual(user.is_staff, True)
 
     @printname
@@ -436,7 +436,7 @@ class EpicMembersTests(APITestCase):
             self.user_manage1_details_url, data={"format": "json"}
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)  # NOTE Really ?
-        self.assertEqual(pre_count-1, self.helper_count_users())
+        self.assertEqual(pre_count - 1, self.helper_count_users())
 
     @printname
     def test_happy_user_delete__MANAGE(self):

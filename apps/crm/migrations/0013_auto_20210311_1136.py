@@ -17,7 +17,9 @@ def load_status(apps, schema_editor):
     client_old.save()
 
     # CONTRACT INITIAL STATUS
-    contract_new = Status(table="CONTRACT", value="OPENED", label="Waiting for a signature")
+    contract_new = Status(
+        table="CONTRACT", value="OPENED", label="Waiting for a signature"
+    )
     contract_new.save()
 
     contract_signed = Status(table="CONTRACT", value="SIGNED", label="Signed")
@@ -45,7 +47,7 @@ def delete_status(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0012_status'),
+        ("crm", "0012_status"),
     ]
 
     operations = [

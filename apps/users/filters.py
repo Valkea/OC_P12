@@ -17,9 +17,7 @@ class EpicMemberFilter(filters.FilterSet):
         field_name="last_name", lookup_expr="icontains"
     )
 
-    email_contains = filters.CharFilter(
-        field_name="email", lookup_expr="icontains"
-    )
+    email_contains = filters.CharFilter(field_name="email", lookup_expr="icontains")
 
     min_last_login = filters.DateFilter(field_name="last_login", lookup_expr="gte")
     max_last_login = filters.DateFilter(field_name="last_login", lookup_expr="lte")

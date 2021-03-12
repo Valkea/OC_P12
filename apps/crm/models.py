@@ -6,7 +6,6 @@ from apps.users.models import EpicMember
 
 
 class Status(models.Model):
-
     class Meta:
         unique_together = (("table", "value"),)
         verbose_name = "Status"

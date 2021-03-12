@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0014_auto_20210311_1305'),
+        ("crm", "0014_auto_20210311_1305"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='client',
-            name='status',
-            field=models.ForeignKey(limit_choices_to={'table': 'CLIENT'}, on_delete=django.db.models.deletion.PROTECT, to='crm.status'),
+            model_name="client",
+            name="status",
+            field=models.ForeignKey(
+                limit_choices_to={"table": "CLIENT"},
+                on_delete=django.db.models.deletion.PROTECT,
+                to="crm.status",
+            ),
         ),
     ]

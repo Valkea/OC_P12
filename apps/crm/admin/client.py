@@ -191,6 +191,3 @@ class ClientAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)
-
-        
-

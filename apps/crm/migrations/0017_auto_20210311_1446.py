@@ -7,27 +7,46 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0016_auto_20210311_1327'),
+        ("crm", "0016_auto_20210311_1327"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='status',
-            options={'verbose_name': 'Status', 'verbose_name_plural': 'Status'},
+            name="status",
+            options={"verbose_name": "Status", "verbose_name_plural": "Status"},
         ),
         migrations.AlterField(
-            model_name='client',
-            name='status',
-            field=models.ForeignKey(blank=True, limit_choices_to={'table': 'CLIENT'}, null=True, on_delete=django.db.models.deletion.PROTECT, to='crm.status'),
+            model_name="client",
+            name="status",
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to={"table": "CLIENT"},
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="crm.status",
+            ),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='status',
-            field=models.ForeignKey(blank=True, limit_choices_to={'table': 'CONTRACT'}, null=True, on_delete=django.db.models.deletion.PROTECT, to='crm.status'),
+            model_name="contract",
+            name="status",
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to={"table": "CONTRACT"},
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="crm.status",
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='status',
-            field=models.ForeignKey(blank=True, limit_choices_to={'table': 'EVENT'}, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='status_events', to='crm.status'),
+            model_name="event",
+            name="status",
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to={"table": "EVENT"},
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="status_events",
+                to="crm.status",
+            ),
         ),
     ]
