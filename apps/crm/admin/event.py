@@ -104,40 +104,30 @@ class EventAdmin(admin.ModelAdmin):
 
         return CheckEventPermissions.has_permission_static(request, is_admin=True)
 
-        # if request.user.is_superuser:
-        #     return True
-
-        # if request.user.team == EpicMember.Team.MANAGE:
-        #     return True
-
-        # if request.user.team == EpicMember.Team.SELL:
-        #     return True
-
-        # return False
-
     def has_change_delete_permission(self, request, obj=None):
 
-        if obj is None:
-            return False
+        if request.user.is_superuser:
+            return True
+        elif request.user.team == EpicMember.Team.MANAGE:
+            return True
+        elif request.user.team == EpicMember.Team.SELL:
+            if obj is None:
+                return False
+            contract = Contract.objects.get(id=obj.contract.id)
+            return contract.sales_contact == request.user
+        elif request.user.team == EpicMember.Team.SUPPORT:
+            if obj is None:
+                return False
+            return obj.support_contact == request.user
 
-        return CheckEventPermissions.has_object_permission_static(
-            request, obj, is_admin=True
-        )
+        return False
 
-        # if request.user.is_superuser:
-        #     return True
+        # if obj is None:
+        #     return False
 
-        # if request.user.team == EpicMember.Team.MANAGE:
-        #     return True
-
-        # if request.user.team == EpicMember.Team.SELL:
-        #     contract = Contract.objects.get(id=obj.contract.id)
-        #     return contract.sales_contact == request.user
-
-        # if request.user.team == EpicMember.Team.SUPPORT:
-        #     return obj.support_contact == request.user
-
-        # return False
+        # return CheckEventPermissions.has_object_permission_static(
+        #     request, obj, is_admin=True
+        # )
 
     def has_change_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)

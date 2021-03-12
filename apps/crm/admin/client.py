@@ -166,15 +166,31 @@ class ClientAdmin(admin.ModelAdmin):
 
     def has_change_delete_permission(self, request, obj=None):
 
-        if obj is None:
+        if request.user.is_superuser:
+            return True
+        elif request.user.team == EpicMember.Team.MANAGE:
+            return True
+        elif request.user.team == EpicMember.Team.SELL:
+            if obj is None:
+                return False
+            return obj.sales_contact == request.user
+        elif request.user.team == EpicMember.Team.SUPPORT:
             return False
 
-        return CheckClientPermissions.has_object_permission_static(
-            request, obj, is_admin=True
-        )
+        return False
+
+        # if obj is None:
+        #     return False
+
+        # return CheckClientPermissions.has_object_permission_static(
+        #     request, obj, is_admin=True
+        # )
 
     def has_change_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
         return self.has_change_delete_permission(request, obj)
+
+        
+
