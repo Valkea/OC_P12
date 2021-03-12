@@ -1,0 +1,63 @@
+[
+  {
+    "model": "users.EpicMember",
+    "fields": {
+        "username": "manage_user",
+        "team": "MANAGE",
+        "password": "pbkdf2_sha256$216000$DZKc76MjVsLP$ZcIsh9ddK++NzyrXorYLpWA12+XT20d4f/hqYWgKkE4=",
+	"updated_time": "2000-01-01 00:00:00",
+	"created_time": "2000-01-01 00:00:00",
+	"is_active": "True",
+	"is_staff": "True"
+    }
+  },
+  {
+    "model": "users.EpicMember",
+    "fields": {
+        "username": "sales_user",
+        "team": "SELL",
+        "password": "pbkdf2_sha256$216000$DZKc76MjVsLP$ZcIsh9ddK++NzyrXorYLpWA12+XT20d4f/hqYWgKkE4=",
+	"updated_time": "2000-01-01 00:00:00",
+	"created_time": "2000-01-01 00:00:00",
+	"is_active": "True",
+	"is_staff": "True"
+    }
+  },
+  {
+    "model": "users.EpicMember",
+    "fields": {
+        "username": "support_user",
+        "team": "SUPPORT",
+        "password": "pbkdf2_sha256$216000$DZKc76MjVsLP$ZcIsh9ddK++NzyrXorYLpWA12+XT20d4f/hqYWgKkE4=",
+	"updated_time": "2000-01-01 00:00:00",
+	"created_time": "2000-01-01 00:00:00",
+	"is_active": "True",
+	"is_staff": "True"
+    }
+  },
+  {
+    "model": "users.EpicMember",
+    "fields": {
+        "username": "noteam_user",
+        "team": "NONE",
+        "password": "pbkdf2_sha256$216000$DZKc76MjVsLP$ZcIsh9ddK++NzyrXorYLpWA12+XT20d4f/hqYWgKkE4=",
+	"updated_time": "2000-01-01 00:00:00",
+	"created_time": "2000-01-01 00:00:00",
+	"is_active": "True",
+	"is_staff": "True"
+    }
+  },
+  {
+    "model": "users.EpicMember",
+    "fields": {
+        "username": "epicadmin",
+        "team": "NONE",
+        "password": "pbkdf2_sha256$216000$DZKc76MjVsLP$ZcIsh9ddK++NzyrXorYLpWA12+XT20d4f/hqYWgKkE4=",
+	"updated_time": "2000-01-01 00:00:00",
+	"created_time": "2000-01-01 00:00:00",
+	"is_active": "True",
+	"is_staff": "True",
+        "is_superuser": "True"
+    }
+  }
+]
