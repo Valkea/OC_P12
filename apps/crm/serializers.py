@@ -1,6 +1,19 @@
 from rest_framework import serializers
 
-from .models import Client, Contract, Event
+from .models import Client, Contract, Event, Status
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    """ This serializer returns a translation of the Status model. """
+
+    class Meta:
+        model = Status
+        fields = [
+            "id",
+            "table",
+            "value",
+            "label",
+        ]
 
 
 class ClientSerializer(serializers.ModelSerializer):

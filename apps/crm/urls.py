@@ -19,9 +19,19 @@ from .views import (
     ClientViewSet,
     ContractViewSet,
     EventViewSet,
+    StatusViewSet,
 )
 
 urlpatterns = [
+    path(
+        "status/",
+        StatusViewSet.as_view(
+            {
+                "get": "list",
+            }
+        ),
+        name="status",
+    ),
     path(
         "clients/",
         ClientViewSet.as_view(

@@ -3,8 +3,13 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from django_filters import rest_framework as filters
 
 from apps.users.models import EpicMember
-from .models import Client, Contract, Event
-from .serializers import ClientSerializer, ContractSerializer, EventSerializer
+from .models import Client, Contract, Event, Status
+from .serializers import (
+    ClientSerializer,
+    ContractSerializer,
+    EventSerializer,
+    StatusSerializer,
+)
 from .permissions import (
     CheckClientPermissions,
     CheckContractPermissions,
@@ -12,6 +17,15 @@ from .permissions import (
 )
 
 from .filters import ClientFilter, ContractFilter, EventFilter
+
+
+class StatusViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StatusSerializer
+    queryset = Status.objects.all()
+
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ["id", "table", "value", "label"]
 
 
 class ClientViewSet(viewsets.ModelViewSet):
