@@ -102,7 +102,16 @@ class EventAdmin(admin.ModelAdmin):
         if not hasattr(request.user, "team"):
             return False
 
-        return CheckEventPermissions.has_permission_static(request, is_admin=True)
+        if request.user.is_superuser:
+            return True
+        elif request.user.team == EpicMember.Team.MANAGE:
+            return True
+        elif request.user.team == EpicMember.Team.SELL:
+            return True
+
+        return False
+
+        # return CheckEventPermissions.has_permission_static(request, is_admin=True)
 
     def has_change_delete_permission(self, request, obj=None):
 
