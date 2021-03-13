@@ -43,9 +43,6 @@ Create a database named `epic_events_crm`
 ```bash
 >>> psql
 >>> CREATE DATABASE epic_events_crm;
-CREATE DATABASE
->>> \c epic_events_crm 
-You are now connected to database "epic_events_crm" as user "xxxx".
 >>> \q
 ```
 
@@ -77,24 +74,24 @@ Once installed, the only required command is the following one
 visit *http://127.0.0.1:8000/login/* and use the one of the demo credentials below:
 
 > Manage Team
-*demo-login :* manage_user
-*demo-password :* demopass
+* *demo-login :* manage_user
+* *demo-password :* demopass
 
 > Sales Team
-*demo-login :* sales_user
-*demo-password :* demopass
+* *demo-login :* sales_user
+* *demo-password :* demopass
 
 > Support Team
-*demo-login :* support_user
-*demo-password :* demopass
+* *demo-login :* support_user
+* *demo-password :* demopass
 
 > No Team
-*demo-login :* noteam_user
-*demo-password :* demopass
+* *demo-login :* noteam_user
+* *demo-password :* demopass
 
 > Superadmin
-*demo-login :* epicadmin
-*demo-password :* demopass
+* *demo-login :* epicadmin
+* *demo-password :* demopass
 
 **these accounts need to be removed / changed before going into production !**
 
