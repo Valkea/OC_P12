@@ -134,8 +134,12 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+
 # Define the default AUTH_USER_MODEL value
 AUTH_USER_MODEL = "users.EpicMember"
+
+
+# Security parameters
 
 # Define Restful default values
 REST_FRAMEWORK = {
@@ -169,8 +173,10 @@ SIMPLE_JWT = {
     #     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-APPEND_SLASH = True
 
 # INTERNAL_IPS = [
 #     "127.0.0.1",
 # ]
+
+SESSION_COOKIE_HTTPONLY = True
+APPEND_SLASH = True
