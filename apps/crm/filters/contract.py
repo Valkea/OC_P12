@@ -4,6 +4,9 @@ from apps.crm.models import Contract
 
 
 class ContractFilter(filters.FilterSet):
+    """
+    This is a filter for the :model:`crm.Contract` model lists
+    """
 
     min_amount = filters.NumberFilter(field_name="amount", lookup_expr="gte")
     max_amount = filters.NumberFilter(field_name="amount", lookup_expr="lte")

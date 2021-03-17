@@ -4,7 +4,8 @@ from django.urls import reverse
 
 from apps.crm.models import Contract, Event
 from apps.users.models import EpicMember
-from apps.crm.permissions import CheckEventPermissions
+
+# from apps.crm.permissions import CheckEventPermissions
 
 # admin.site.register(Event)
 

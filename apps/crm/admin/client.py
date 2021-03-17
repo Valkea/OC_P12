@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from apps.crm.models import Client, Contract
 from apps.users.models import EpicMember
-from apps.crm.permissions import CheckClientPermissions
+
+# from apps.crm.permissions import CheckClientPermissions
 
 # admin.site.register(Client)
 
@@ -143,6 +144,7 @@ class ClientAdmin(admin.ModelAdmin):
         )
 
     def save_model(self, request, obj, form, change):
+        """ Automatically add the current user as sales_contact if he/she is part of the SALES team """
 
         if request.user.team == EpicMember.Team.SELL:
             obj.sales_contact = request.user

@@ -20,15 +20,24 @@ from .filters import ClientFilter, ContractFilter, EventFilter
 
 
 class StatusViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`crm.Status` instances using the StatusSerializer
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = StatusSerializer
     queryset = Status.objects.all()
 
+    # This is a filter for the `crm.Status` model lists
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ["id", "table", "value", "label"]
 
 
 class ClientViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`crm.Client` instances using the ClientSerializer
+    """
+
     permission_classes = [(permissions.IsAuthenticated & CheckClientPermissions)]
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
@@ -60,6 +69,10 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 
 class ContractViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`crm.Contract` instances using the ContractSerializer
+    """
+
     permission_classes = [(permissions.IsAuthenticated & CheckContractPermissions)]
     serializer_class = ContractSerializer
     queryset = Contract.objects.all()
@@ -69,6 +82,7 @@ class ContractViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
         """ Handle nested Client's 'pk' in the URI """
+
         try:
             client_id = self.kwargs.get("client_pk")
             client = Client.objects.get(id=client_id)
@@ -116,6 +130,10 @@ class ContractViewSet(viewsets.ModelViewSet):
 
 
 class EventViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`crm.Event` instances using the EventSerializer
+    """
+
     permission_classes = [(permissions.IsAuthenticated & CheckEventPermissions)]
     serializer_class = EventSerializer
     queryset = Event.objects.all()
@@ -125,6 +143,7 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
         """ Handle nested Client's and Contract's 'pk' in the URI """
+
         try:
             client_id = self.kwargs.get("client_pk")
             Client.objects.get(id=client_id)

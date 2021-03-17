@@ -4,6 +4,9 @@ from apps.crm.models import Event
 
 
 class EventFilter(filters.FilterSet):
+    """
+    This is a filter for the :model:`crm.Event` model lists
+    """
 
     name_contains = filters.CharFilter(field_name="name", lookup_expr="icontains")
 

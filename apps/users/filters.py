@@ -4,6 +4,9 @@ from apps.users.models import EpicMember
 
 
 class EpicMemberFilter(filters.FilterSet):
+    """
+    This is a filter for the :model:`users.EventMember` model lists
+    """
 
     username_contains = filters.CharFilter(
         field_name="username", lookup_expr="icontains"

@@ -11,7 +11,7 @@ class EpicMember_ViewSet(viewsets.ModelViewSet):
     """
     Display :model:`users.User` instances using the EpicMemberSerializer
 
-    These are the LIGHT user views
+    These are the PARTIAL (light) user views
     """
 
     permission_classes = [permissions.IsAuthenticated & CheckEpicMemberPermissions]
@@ -24,9 +24,9 @@ class EpicMember_ViewSet(viewsets.ModelViewSet):
 
 class EpicMember_Detailed_ViewSet(viewsets.ModelViewSet):
     """
-    Display :model:`users.User` instances using the EpicMemberSerializer
+    Display :model:`users.User` instances using the EpicMember_DETAILS_Serializer
 
-    These are the LIGHT user views
+    These are the DETAILED (not full) user views
     """
 
     permission_classes = [permissions.IsAuthenticated & CheckEpicMemberPermissions]

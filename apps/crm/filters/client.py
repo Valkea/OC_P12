@@ -4,6 +4,9 @@ from apps.crm.models import Client
 
 
 class ClientFilter(filters.FilterSet):
+    """
+    This is a filter for the :model:`crm.Client` model lists
+    """
 
     company_name_contains = filters.CharFilter(
         field_name="company_name", lookup_expr="icontains"

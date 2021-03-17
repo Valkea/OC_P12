@@ -35,7 +35,7 @@ class EpicMember_Serializer(serializers.ModelSerializer):
 
 class EpicMember_DETAILS_Serializer(serializers.ModelSerializer):
     """
-    This serializer returns a translation of the FULL EpicMember model
+    This serializer returns a DETAILED translation of the EpicMember model
     """
 
     date_joined = serializers.ReadOnlyField()

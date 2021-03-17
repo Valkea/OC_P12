@@ -63,6 +63,8 @@ class UserAdmin(UserAdmin):
         return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
+        """ Automatically set all users as staff member so they can access the admin """
+
         if request.user.is_superuser or request.user.team == EpicMember.Team.MANAGE:
             obj.is_staff = True
             obj.save()
